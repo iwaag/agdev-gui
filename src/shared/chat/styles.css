@@ -1,0 +1,146 @@
+.chat-thread {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0f1015;
+  border: 1px solid #1a1a22;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.chat-thread__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: #11121a;
+  border-bottom: 1px solid #1a1a22;
+}
+
+.chat-thread__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f4f4f7;
+}
+
+.chat-thread__subtitle {
+  font-size: 0.75rem;
+  color: #7f8793;
+  margin-top: 4px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.chat-thread__meta {
+  font-size: 0.75rem;
+  color: #7f8793;
+}
+
+.chat-thread__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: radial-gradient(circle at top, rgba(36, 40, 60, 0.2), transparent 55%);
+}
+
+.chat-bubble {
+  position: relative;
+  max-width: 72%;
+  padding: 12px 14px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  line-height: 1.55;
+  font-size: 0.9rem;
+}
+
+.chat-bubble--ai {
+  align-self: flex-start;
+  background: #151a22;
+  border: 1px solid #232a36;
+  color: #d8dde6;
+}
+
+.chat-bubble--human {
+  align-self: flex-end;
+  background: #1a1924;
+  border: 1px solid #2c2a3a;
+  color: #f1f1f5;
+}
+
+.chat-bubble--ai::before,
+.chat-bubble--human::before {
+  content: '';
+  position: absolute;
+  bottom: 10px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.chat-bubble--ai::before {
+  left: -6px;
+  border-width: 6px 6px 6px 0;
+  border-color: transparent #151a22 transparent transparent;
+}
+
+.chat-bubble--human::before {
+  right: -6px;
+  border-width: 6px 0 6px 6px;
+  border-color: transparent transparent transparent #1a1924;
+}
+
+.chat-bubble__caption {
+  font-size: 0.75rem;
+  color: #8b91a4;
+}
+
+.chat-text {
+  white-space: pre-line;
+}
+
+.chat-media {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #242636;
+  background: #0d0f17;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-media img,
+.chat-media video {
+  width: 100%;
+  display: block;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.chat-media--audio {
+  padding: 10px 12px 8px;
+}
+
+.chat-media--audio audio {
+  width: 100%;
+}
+
+.chat-media__caption {
+  font-size: 0.75rem;
+  color: #8b91a4;
+  padding: 0 12px 10px;
+}
+
+.chat-media--placeholder {
+  min-height: 120px;
+  align-items: center;
+  justify-content: center;
+  color: #6c7185;
+  font-size: 0.8rem;
+  border-style: dashed;
+  background: #0b0c13;
+}

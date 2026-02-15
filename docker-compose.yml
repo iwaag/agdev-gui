@@ -1,0 +1,14 @@
+services:
+  agdev_gui:
+    build: .
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_AGCORE_API_URL: ${VITE_AGCORE_API_URL}
+      VITE_AGVIDEO_API_URL: ${VITE_AGVIDEO_API_URL}
+      VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
+      VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
+      VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
+
+volumes:
+  keycloak-postgres-data:
