@@ -7,12 +7,15 @@ function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const isCore = location.pathname.startsWith('/agcore')
-  const currentProduct = isCore ? 'AGCore' : 'AGVideo'
+  const isCode = location.pathname.startsWith('/agcode')
+  const currentProduct = isCore ? 'AGCore' : isCode ? 'AGCode' : 'AGVideo'
   const navItems = isCore
     ? [
         { to: '/agcore', label: 'Dashboard', icon: '▦', end: true },
         { to: '/agcore/brain-mining', label: 'Brain Mining', icon: '💎' },
       ]
+    : isCode
+      ? [{ to: '/agcode', label: 'Dashboard', icon: '▦', end: true }]
     : [
         { to: '/agvideo', label: 'Dashboard', icon: '▦', end: true },
         { to: '/agvideo/gallery', label: 'Gallery', icon: '◫' },
@@ -35,6 +38,10 @@ function Sidebar() {
     setIsMenuOpen(false)
     if (target === 'agvideo') {
       navigate('/agvideo')
+      return
+    }
+    if (target === 'agcode') {
+      navigate('/agcode')
       return
     }
     navigate('/agcore')
@@ -60,11 +67,14 @@ function Sidebar() {
               <span className="product-name">AGCore</span>
               <span className="product-desc">Core operations</span>
             </button>
+            <button className="product-item" type="button" role="menuitem" onClick={() => handleSelect('agcode')}>
+              <span className="product-name">AGCode</span>
+              <span className="product-desc">Code workspace</span>
+            </button>
             <button className="product-item" type="button" role="menuitem" onClick={() => handleSelect('agvideo')}>
               <span className="product-name">AGVideo</span>
               <span className="product-desc">Video creation suite</span>
             </button>
-            
           </div>
         ) : null}
       </div>

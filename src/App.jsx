@@ -7,6 +7,7 @@ import AGVideoClipAssetsPage from './features/agvideo/pages/ClipAssetsPage'
 import AGVideoSettingsPage from './features/agvideo/pages/SettingsPage'
 import AGCoreDashboardPage from './features/agcore/pages/DashboardPage'
 import AGCoreBrainMining from './features/agcore/pages/BrainMining'
+import AGCodeDashboardPage from './features/agcode/pages/DashboardPage'
 import LoginPage from './app/pages/LoginPage'
 import PrivateRoute from './shared/components/PrivateRoute'
 
@@ -39,6 +40,16 @@ function App() {
       >
         <Route index element={<AGCoreDashboardPage />} />
         <Route path="brain-mining" element={<AGCoreBrainMining />} />
+      </Route>
+      <Route
+        path="/agcode"
+        element={
+          <PrivateRoute>
+            <Layout />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<AGCodeDashboardPage />} />
       </Route>
     </Routes>
   )

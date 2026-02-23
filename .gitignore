@@ -8,3 +8,4 @@ yarn-error.log*
 pnpm-debug.log*
 #docs are not ready for publish
 docs/
+.local/
