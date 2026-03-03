@@ -8,6 +8,7 @@ import AGVideoSettingsPage from './features/agvideo/pages/SettingsPage'
 import AGCoreDashboardPage from './features/agcore/pages/DashboardPage'
 import AGCoreBrainMining from './features/agcore/pages/BrainMining'
 import AGCodeDashboardPage from './features/agcode/pages/DashboardPage'
+import AGCodeSessionPage from './features/agcode/pages/SessionPage'
 import LoginPage from './app/pages/LoginPage'
 import PrivateRoute from './shared/components/PrivateRoute'
 
@@ -50,6 +51,7 @@ function App() {
         }
       >
         <Route index element={<AGCodeDashboardPage />} />
+        <Route path="session" element={<AGCodeSessionPage />} />
       </Route>
     </Routes>
   )

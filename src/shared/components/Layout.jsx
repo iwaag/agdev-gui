@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import AccountMenu from './AccountMenu'
@@ -6,6 +7,7 @@ import { useBackground } from '../contexts/BackgroundContext'
 
 function Layout() {
   const { backgroundUrl } = useBackground()
+  const [selectedProject, setSelectedProject] = useState(null)
 
   return (
     <div
@@ -25,14 +27,17 @@ function Layout() {
       <div className="main-area">
         <header className="main-header">
           <div className="main-header__left">
-            <ProjectSelectorMenu className="main-header__project-selector" />
+            <ProjectSelectorMenu
+              className="main-header__project-selector"
+              onProjectChange={setSelectedProject}
+            />
           </div>
           <div className="main-header__right">
             <AccountMenu />
           </div>
         </header>
         <main className="main-content">
-          <Outlet />
+          <Outlet context={{ selectedProject }} />
         </main>
       </div>
     </div>

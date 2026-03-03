@@ -114,6 +114,14 @@
   transform: translateY(-1px);
 }
 
+.agcore-dashboard__add-button:disabled {
+  border-color: #2a2d36;
+  background: #17191f;
+  color: #6d7381;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .agcore-dashboard__project-list {
   display: flex;
   flex-direction: column;
@@ -259,6 +267,41 @@
   .agcore-dashboard__main {
     min-height: 320px;
   }
+}
+
+.agcode-session-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 6, 12, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 120;
+}
+
+.agcode-session-dialog {
+  width: min(100%, 460px);
+  background: #0f0f12;
+  border: 1px solid #1a1a1f;
+  border-radius: 16px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+  padding: 22px;
+}
+
+.agcode-session-dialog__header {
+  margin-bottom: 18px;
+}
+
+.agcode-session-dialog__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.agcode-session-dialog__select {
+  width: 100%;
+  appearance: none;
 }
 
 /* Placeholder Page */

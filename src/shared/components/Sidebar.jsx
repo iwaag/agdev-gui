@@ -15,7 +15,10 @@ function Sidebar() {
         { to: '/agcore/brain-mining', label: 'Brain Mining', icon: '💎' },
       ]
     : isCode
-      ? [{ to: '/agcode', label: 'Dashboard', icon: '▦', end: true }]
+      ? [
+          { to: '/agcode', label: 'Dashboard', icon: '▦', end: true },
+          { to: '/agcode/session', label: 'Session', icon: '◌' },
+        ]
     : [
         { to: '/agvideo', label: 'Dashboard', icon: '▦', end: true },
         { to: '/agvideo/gallery', label: 'Gallery', icon: '◫' },
