@@ -1,8 +1,57 @@
 import { useEffect, useState } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { authFetch } from '../../../api/authFetch'
+import { ChatThread } from '../../../shared/chat'
 
 const AGCODE_URL = import.meta.env.VITE_AGCODE_API_URL || 'http://localhost:8000'
+const AGCODE_SIDE_URL =
+  import.meta.env.VITE_AGCODE_SIDE_API_URL || 'http://localhost:11003'
+const previewImage =
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="270" viewBox="0 0 480 270"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="%23212a3a"/><stop offset="100%" stop-color="%232b3b4f"/></linearGradient></defs><rect width="480" height="270" fill="url(%23g)"/><circle cx="360" cy="90" r="60" fill="%235b7fff"/><rect x="40" y="150" width="400" height="80" rx="12" fill="%23131a24"/><text x="60" y="200" fill="%23bcd1ff" font-size="22" font-family="Arial">Vision Snapshot</text></svg>'
+const previewMessages = [
+  {
+    id: 'm1',
+    role: 'ai',
+    type: 'text',
+    content: {
+      text: 'Idea cluster: ambient forest scene at dawn, soft fog layers, slow camera drift.',
+    },
+  },
+  {
+    id: 'm2',
+    role: 'human',
+    type: 'text',
+    content: {
+      text: 'Add a gentle pan to the right and keep the highlights warm.',
+    },
+  },
+  {
+    id: 'm3',
+    role: 'ai',
+    type: 'image',
+    content: {
+      src: previewImage,
+      alt: 'Concept preview',
+      caption: 'Keyframe exploration (stylized placeholder)',
+    },
+  },
+  {
+    id: 'm4',
+    role: 'human',
+    type: 'audio',
+    content: {
+      caption: 'Ambient audio sample (placeholder)',
+    },
+  },
+  {
+    id: 'm5',
+    role: 'ai',
+    type: 'video',
+    content: {
+      caption: 'Motion preview (placeholder)',
+    },
+  },
+]
 
 function AGCodeSessionPage() {
   const maxSessionCount = 1
@@ -14,6 +63,10 @@ function AGCodeSessionPage() {
   const [error, setError] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
+  const [hostToken, setHostToken] = useState('')
+  const [tunnelName, setTunnelName] = useState('')
+  const [tunnelStatus, setTunnelStatus] = useState('')
+  const [isSubmittingTunnelSetup, setIsSubmittingTunnelSetup] = useState(false)
   const hasReachedSessionLimit = sessions.length >= maxSessionCount
 
   const selectedSession =
@@ -151,6 +204,86 @@ function AGCodeSessionPage() {
     }
   }
 
+  const extractTunnelName = (payload) => {
+    if (!payload || typeof payload !== 'object') {
+      return ''
+    }
+
+    const directCandidates = [
+      payload.tunnel_name,
+      payload.tunnelName,
+      payload.name,
+      payload.tunnel,
+      payload.id,
+    ]
+    const directMatch = directCandidates.find(
+      (value) => typeof value === 'string' && value.trim()
+    )
+
+    if (directMatch) {
+      return directMatch.trim()
+    }
+
+    if (payload.data && typeof payload.data === 'object') {
+      const nestedCandidates = [
+        payload.data.tunnel_name,
+        payload.data.tunnelName,
+        payload.data.name,
+      ]
+      const nestedMatch = nestedCandidates.find(
+        (value) => typeof value === 'string' && value.trim()
+      )
+      if (nestedMatch) {
+        return nestedMatch.trim()
+      }
+    }
+
+    return ''
+  }
+
+  const handleSetupTunnel = async (event) => {
+    event.preventDefault()
+
+    const trimmedToken = hostToken.trim()
+
+    if (!trimmedToken) {
+      setTunnelStatus('Host token is required.')
+      return
+    }
+
+    setIsSubmittingTunnelSetup(true)
+    setTunnelStatus('')
+    setTunnelName('')
+
+    try {
+      const tunnelResponse = await fetch(`${AGCODE_SIDE_URL}/start-tunnel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          tunnel_name: 'test',
+          host_token: trimmedToken,
+        }),
+      })
+
+      if (!tunnelResponse.ok) {
+        throw new Error(`start-tunnel failed: ${tunnelResponse.status}`)
+      }
+
+      const tunnelPayload = await tunnelResponse.json().catch(() => null)
+      const nextTunnelName = extractTunnelName(tunnelPayload)
+
+      setTunnelName(nextTunnelName || 'test')
+      setTunnelStatus('Tunnel started.')
+    } catch (setupError) {
+      console.error('Failed to start tunnel:', setupError)
+      setTunnelStatus('Failed to start tunnel.')
+    } finally {
+      setIsSubmittingTunnelSetup(false)
+    }
+  }
+
   return (
     <>
       <div className="agcore-dashboard">
@@ -199,19 +332,42 @@ function AGCodeSessionPage() {
           </div>
         </aside>
 
-        <section className="agcore-dashboard__main">
-          {selectedSession ? (
-            <div className="agcore-dashboard__settings">
-              <div>
-                <h2 className="agcore-dashboard__settings-title">
-                  {selectedSession.title}
-                </h2>
-                <p className="agcore-dashboard__settings-subtitle">
-                  {selectedSession.id}
-                </p>
-              </div>
+        <section
+          className={`agcore-dashboard__main${selectedSession ? ' agcore-dashboard__main--chat' : ''}`}
+        >
+          <form className="agcode-tunnel-bar" onSubmit={handleSetupTunnel}>
+            <label className="agcode-tunnel-bar__label" htmlFor="host-token">
+              Host token
+            </label>
+            <input
+              id="host-token"
+              className="agcode-tunnel-bar__input"
+              type="password"
+              value={hostToken}
+              onChange={(event) => setHostToken(event.target.value)}
+              placeholder="Paste token"
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="agcode-tunnel-bar__button"
+              disabled={isSubmittingTunnelSetup}
+            >
+              {isSubmittingTunnelSetup ? 'Sending...' : 'Send + Start Tunnel'}
+            </button>
+            <div className="agcode-tunnel-bar__result" title={tunnelName || '-'}>
+              {tunnelName || '-'}
             </div>
-          ) : null}
+            {tunnelStatus ? (
+              <p className="agcode-tunnel-bar__status">{tunnelStatus}</p>
+            ) : null}
+          </form>
+
+          {selectedSession ? (
+            <ChatThread title={selectedSession.title} messages={previewMessages} />
+          ) : (
+            <p className="agcore-dashboard__subtitle">Select a session</p>
+          )}
         </section>
       </div>
 

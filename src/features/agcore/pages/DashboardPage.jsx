@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useBackground } from '../../../shared/contexts/BackgroundContext'
 import { authFetch } from "../../../api/authFetch";
+import { useTaskDock } from '../../../shared/taskDock'
 
 const AGCORE_URL = import.meta.env.VITE_AGCORE_API_URL || "http://localhost:8000";
 const BACKGROUND_UPLOAD_URL = `${AGCORE_URL}/project/default_bg/set`
@@ -10,6 +11,7 @@ const initialProjects = [
 
 function DashboardPage() {
   const { setBackgroundFromBlob, clearBackground } = useBackground()
+  const { enqueueTask, openDock } = useTaskDock()
   const [projects, setProjects] = useState(initialProjects)
   const [projectTitle, setProjectTitle] = useState('Untitled project')
   const [backgroundFile, setBackgroundFile] = useState(null)
@@ -49,6 +51,14 @@ function DashboardPage() {
           title: `Untitled project ${nextIndex}`,
         },
       ])
+      enqueueTask({
+        title: 'New project created',
+        summary: `Project ${result.project_id} is ready for setup.`,
+        route: '/agcore',
+        source: 'user',
+        dedupeKey: `project-created-${result.project_id}`,
+      })
+      openDock()
     } catch (error) {
       console.error("Failed to create project:", error);
       alert(`Error: ${error.message}`);
@@ -130,6 +140,14 @@ function DashboardPage() {
         hasBackgroundFile: !!backgroundFile,
         projectId: selectedProjectId,
       })
+      enqueueTask({
+        title: 'Project settings saved',
+        summary: projectTitle,
+        route: '/agcore',
+        source: 'user',
+        status: 'done',
+        dedupeKey: selectedProjectId ? `project-settings-${selectedProjectId}` : undefined,
+      })
     } catch (error) {
       console.error('Failed to save project settings:', error)
       alert(`Error: ${error.message}`)
@@ -139,6 +157,14 @@ function DashboardPage() {
   const handleActivateProject = async () => {
     await applyProjectBackground(selectedProjectId)
     console.log('Activate project (stub)', { projectId: selectedProjectId })
+    enqueueTask({
+      title: 'Project activated',
+      summary: selectedProjectId ? `Project ${selectedProjectId}` : 'No project selected',
+      route: '/agcore/brain-mining',
+      source: 'user',
+      dedupeKey: selectedProjectId ? `project-activate-${selectedProjectId}` : undefined,
+    })
+    openDock()
   }
 
   const handleSelectProject = (project) => {

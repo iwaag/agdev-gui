@@ -385,3 +385,269 @@ body {
   padding: 6px 10px;
   font-size: 0.82rem;
 }
+
+/* Task Dock */
+.task-dock-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: 18px;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #303845;
+  background: #121722;
+  color: #e7ecf8;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.task-dock-launcher__count {
+  min-width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #294cff;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.74rem;
+}
+
+.task-dock-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 70px;
+  width: min(390px, calc(100vw - 24px));
+  max-height: min(70vh, 620px);
+  border-radius: 14px;
+  border: 1px solid #2a2f3d;
+  background: rgba(11, 14, 20, 0.94);
+  backdrop-filter: blur(8px);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.42);
+}
+
+.task-dock-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid #20273a;
+}
+
+.task-dock-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-dock-panel__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f2f4f9;
+}
+
+.task-dock-panel__subtitle {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #93a0ba;
+}
+
+.task-dock-panel__close {
+  border: 1px solid #2f3c59;
+  background: #151f33;
+  color: #d6dded;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.task-dock-panel__add {
+  border: 1px solid #385b49;
+  background: #173226;
+  color: #d6f7e8;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.task-dock-panel__add:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.task-dock-panel__error {
+  padding: 10px 14px 0;
+  font-size: 0.75rem;
+  color: #ff9da4;
+}
+
+.task-dock-panel__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.task-dock-panel__empty {
+  font-size: 0.84rem;
+  color: #a6b1c8;
+  padding: 10px 6px;
+}
+
+.task-dock-card {
+  background: #161d2b;
+  border: 1px solid #2b364f;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.task-dock-card.is-clickable {
+  cursor: pointer;
+}
+
+.task-dock-card.is-clickable:hover {
+  border-color: #3b4b72;
+  background: #1a2438;
+}
+
+.task-dock-card.is-clickable:focus-visible {
+  outline: 2px solid #4f74ff;
+  outline-offset: 2px;
+}
+
+.task-dock-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.task-dock-card__title {
+  font-size: 0.86rem;
+  color: #f3f6ff;
+  font-weight: 650;
+}
+
+.task-dock-card__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.task-dock-card__status--todo {
+  background: #2d3f66;
+  color: #dce8ff;
+}
+
+.task-dock-card__status--done {
+  background: #244d3f;
+  color: #cbf5e6;
+}
+
+.task-dock-card__summary {
+  margin-top: 8px;
+  font-size: 0.79rem;
+  line-height: 1.45;
+  color: #b9c4db;
+}
+
+.task-dock-card__url-block {
+  margin-top: 10px;
+}
+
+.task-dock-card__url-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8f9db8;
+}
+
+.task-dock-card__url {
+  display: block;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: #8eb6ff;
+  word-break: break-all;
+  text-decoration: none;
+}
+
+.task-dock-card__url:hover {
+  text-decoration: underline;
+}
+
+.task-dock-card__meta {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.68rem;
+  color: #8f9db8;
+  text-transform: uppercase;
+}
+
+.task-dock-card__actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+.task-dock-card__action {
+  border: 1px solid #36425f;
+  background: #202b43;
+  color: #d8e1f4;
+  border-radius: 8px;
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.task-dock-card__action--done {
+  border-color: #3f695e;
+  background: #1e3f37;
+  color: #d5f0e8;
+}
+
+.task-dock-card__action--dismiss {
+  border-color: #594253;
+  background: #332233;
+  color: #f0d8ef;
+}
+
+@media (max-width: 800px) {
+  .task-dock-panel {
+    right: 12px;
+    bottom: 64px;
+    width: calc(100vw - 24px);
+    max-height: 62vh;
+  }
+
+  .task-dock-launcher {
+    right: 12px;
+    bottom: 12px;
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTaskDock } from '../../../shared/taskDock'
 
 const initialTasks = [
   {
@@ -33,9 +34,25 @@ const initialTasks = [
 
 function AGCodeDashboardPage() {
   const [selectedTaskId, setSelectedTaskId] = useState(initialTasks[0]?.id ?? null)
+  const { upsertByDedupeKey, openDock } = useTaskDock()
 
   const selectedTask =
     initialTasks.find((task) => task.id === selectedTaskId) ?? initialTasks[0]
+
+  const pushSelectedTaskToDock = () => {
+    if (!selectedTask) {
+      return
+    }
+    upsertByDedupeKey({
+      dedupeKey: `agcode-task-${selectedTask.id}`,
+      title: selectedTask.title,
+      summary: selectedTask.nextAction,
+      route: '/agcode/session',
+      source: 'user',
+      status: selectedTask.status === 'Done' ? 'done' : 'todo',
+    })
+    openDock()
+  }
 
   return (
     <div className="agcore-dashboard">
@@ -92,6 +109,16 @@ function AGCodeDashboardPage() {
             <div className="agcore-dashboard__input">
               {selectedTask?.nextAction}
             </div>
+          </div>
+
+          <div className="agcore-dashboard__actions">
+            <button
+              type="button"
+              className="agcore-dashboard__button agcore-dashboard__button--primary"
+              onClick={pushSelectedTaskToDock}
+            >
+              Push to task dock
+            </button>
           </div>
         </div>
       </section>
