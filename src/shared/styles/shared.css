@@ -571,6 +571,33 @@ body {
   color: #b9c4db;
 }
 
+.task-dock-card__hints {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.task-dock-card__hint {
+  display: grid;
+  gap: 2px;
+}
+
+.task-dock-card__hint-label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8f9db8;
+}
+
+.task-dock-card__hint-value {
+  margin: 0;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  color: #d8e1f4;
+  word-break: break-word;
+}
+
 .task-dock-card__url-block {
   margin-top: 10px;
 }

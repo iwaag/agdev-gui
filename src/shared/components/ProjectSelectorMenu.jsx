@@ -26,7 +26,7 @@ function ProjectSelectorMenu({ className = '', onProjectChange, initialProjectId
         clearBackground()
         return
       }
-
+      
       const downloadPresignedUrl = (await response.text()).trim()
       if (!downloadPresignedUrl) {
         clearBackground()

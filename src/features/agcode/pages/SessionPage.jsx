@@ -4,8 +4,6 @@ import { authFetch } from '../../../api/authFetch'
 import { ChatThread } from '../../../shared/chat'
 
 const AGCODE_URL = import.meta.env.VITE_AGCODE_API_URL || 'http://localhost:8000'
-const AGCODE_SIDE_URL =
-  import.meta.env.VITE_AGCODE_SIDE_API_URL || 'http://localhost:11003'
 const previewImage =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="480" height="270" viewBox="0 0 480 270"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0%" stop-color="%23212a3a"/><stop offset="100%" stop-color="%232b3b4f"/></linearGradient></defs><rect width="480" height="270" fill="url(%23g)"/><circle cx="360" cy="90" r="60" fill="%235b7fff"/><rect x="40" y="150" width="400" height="80" rx="12" fill="%23131a24"/><text x="60" y="200" fill="%23bcd1ff" font-size="22" font-family="Arial">Vision Snapshot</text></svg>'
 const previewMessages = [
@@ -63,7 +61,6 @@ function AGCodeSessionPage() {
   const [error, setError] = useState('')
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
-  const [hostToken, setHostToken] = useState('')
   const [tunnelName, setTunnelName] = useState('')
   const [tunnelStatus, setTunnelStatus] = useState('')
   const [isSubmittingTunnelSetup, setIsSubmittingTunnelSetup] = useState(false)
@@ -97,7 +94,7 @@ function AGCodeSessionPage() {
 
       const result = await response.json()
       const nextSessions = (result.sessions ?? []).map((session) => ({
-        id: `${session.session_id}`,
+        id: `${session.id}`,
         title: session.title?.trim() || '(untitled)',
       }))
 
@@ -198,6 +195,9 @@ function AGCodeSessionPage() {
       console.log('Created session:', result)
       setIsCreateDialogOpen(false)
       await loadSessions(projectId)
+      if (result?.id) {
+        setSelectedSessionId(`${result.id}`)
+      }
     } catch (createError) {
       console.error('Failed to create session:', createError)
       setError('Failed to create session')
@@ -244,10 +244,8 @@ function AGCodeSessionPage() {
   const handleSetupTunnel = async (event) => {
     event.preventDefault()
 
-    const trimmedToken = hostToken.trim()
-
-    if (!trimmedToken) {
-      setTunnelStatus('Host token is required.')
+    if (!selectedSessionId) {
+      setTunnelStatus('Select a session first.')
       return
     }
 
@@ -256,26 +254,35 @@ function AGCodeSessionPage() {
     setTunnelName('')
 
     try {
-      const tunnelResponse = await fetch(`${AGCODE_SIDE_URL}/start-tunnel`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tunnel_name: 'test',
-          host_token: trimmedToken,
-        }),
-      })
+      setTunnelStatus('Opening worker...')
+      const openResponse = await authFetch(
+        `${AGCODE_URL}/session/open?session_id=${encodeURIComponent(selectedSessionId)}`,
+        {
+          method: 'POST',
+        }
+      )
+
+      if (!openResponse.ok) {
+        throw new Error(`open-session failed: ${openResponse.status}`)
+      }
+
+      setTunnelStatus('Starting tunnel...')
+      const tunnelResponse = await authFetch(
+        `${AGCODE_URL}/session/${encodeURIComponent(selectedSessionId)}/tunnel/start`,
+        {
+          method: 'POST',
+        }
+      )
 
       if (!tunnelResponse.ok) {
         throw new Error(`start-tunnel failed: ${tunnelResponse.status}`)
       }
 
-      const tunnelPayload = await tunnelResponse.json().catch(() => null)
+      const tunnelPayload = await tunnelResponse.json()
       const nextTunnelName = extractTunnelName(tunnelPayload)
 
-      setTunnelName(nextTunnelName || 'test')
-      setTunnelStatus('Tunnel started.')
+      setTunnelName(nextTunnelName)
+      setTunnelStatus('Tunnel ready.')
     } catch (setupError) {
       console.error('Failed to start tunnel:', setupError)
       setTunnelStatus('Failed to start tunnel.')
@@ -336,24 +343,13 @@ function AGCodeSessionPage() {
           className={`agcore-dashboard__main${selectedSession ? ' agcore-dashboard__main--chat' : ''}`}
         >
           <form className="agcode-tunnel-bar" onSubmit={handleSetupTunnel}>
-            <label className="agcode-tunnel-bar__label" htmlFor="host-token">
-              Host token
-            </label>
-            <input
-              id="host-token"
-              className="agcode-tunnel-bar__input"
-              type="password"
-              value={hostToken}
-              onChange={(event) => setHostToken(event.target.value)}
-              placeholder="Paste token"
-              autoComplete="off"
-            />
+            <span className="agcode-tunnel-bar__label">VS Code tunnel</span>
             <button
               type="submit"
               className="agcode-tunnel-bar__button"
-              disabled={isSubmittingTunnelSetup}
+              disabled={isSubmittingTunnelSetup || !selectedSessionId}
             >
-              {isSubmittingTunnelSetup ? 'Sending...' : 'Send + Start Tunnel'}
+              {isSubmittingTunnelSetup ? 'Starting...' : 'Open + Start Tunnel'}
             </button>
             <div className="agcode-tunnel-bar__result" title={tunnelName || '-'}>
               {tunnelName || '-'}
@@ -418,7 +414,7 @@ function AGCodeSessionPage() {
               <div className="agcore-dashboard__actions">
                 <button
                   type="button"
-                  className="agcore-dashboard__button agcore-dashboard__button--ghost"
+                  className="agcore-dashboard__button"
                   onClick={handleCloseCreateDialog}
                 >
                   Cancel
@@ -427,7 +423,7 @@ function AGCodeSessionPage() {
                   type="submit"
                   className="agcore-dashboard__button agcore-dashboard__button--primary"
                 >
-                  Begin
+                  Create
                 </button>
               </div>
             </form>

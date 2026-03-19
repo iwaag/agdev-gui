@@ -4,27 +4,36 @@ function TaskCard({ task, onMarkDone, onDismiss }) {
   const navigate = useNavigate()
   const isTodo = task.status === 'todo'
   const statusLabel = task.displayStatus ?? task.status
+  const isClickable = Boolean(task.redirectUrl || task.route)
+  const hintEntries = Object.entries(task.hints ?? {}).filter(
+    ([key, value]) => key && typeof value === 'string' && value.length > 0
+  )
 
   const handleCardClick = () => {
+    if (task.redirectUrl) {
+      window.open(task.redirectUrl, '_blank', 'noopener,noreferrer')
+      return
+    }
+
     if (task.route) {
       navigate(task.route)
     }
   }
 
   const handleCardKeyDown = (event) => {
-    if ((event.key === 'Enter' || event.key === ' ') && task.route) {
+    if ((event.key === 'Enter' || event.key === ' ') && isClickable) {
       event.preventDefault()
-      navigate(task.route)
+      handleCardClick()
     }
   }
 
   return (
     <article
-      className={`task-dock-card${task.route ? ' is-clickable' : ''}`}
+      className={`task-dock-card${isClickable ? ' is-clickable' : ''}`}
       onClick={handleCardClick}
       onKeyDown={handleCardKeyDown}
-      role={task.route ? 'button' : undefined}
-      tabIndex={task.route ? 0 : undefined}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
     >
       <div className="task-dock-card__header">
         <h4 className="task-dock-card__title">{task.title}</h4>
@@ -33,6 +42,16 @@ function TaskCard({ task, onMarkDone, onDismiss }) {
         </span>
       </div>
       {task.summary ? <p className="task-dock-card__summary">{task.summary}</p> : null}
+      {hintEntries.length > 0 ? (
+        <dl className="task-dock-card__hints">
+          {hintEntries.map(([label, value]) => (
+            <div key={label} className="task-dock-card__hint">
+              <dt className="task-dock-card__hint-label">{label}</dt>
+              <dd className="task-dock-card__hint-value">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
       {task.redirectUrl ? (
         <div className="task-dock-card__url-block">
           <span className="task-dock-card__url-label">Redirect URL</span>
@@ -49,7 +68,7 @@ function TaskCard({ task, onMarkDone, onDismiss }) {
       ) : null}
       <div className="task-dock-card__meta">
         <span className="task-dock-card__source">{task.source}</span>
-        {task.route ? <span className="task-dock-card__route">open</span> : null}
+        {isClickable ? <span className="task-dock-card__route">open</span> : null}
       </div>
       <div className="task-dock-card__actions">
         {isTodo ? (

@@ -6,6 +6,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['agpc.local', 'agpc', 'agdev.net']
+    allowedHosts: ['agpc.local', 'agpc', 'agdev.net', '100.87.94.9']
   }
 })
